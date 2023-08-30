@@ -1,9 +1,5 @@
 package org.launchcode.scorekeeperapp.controllers;
 
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
-import org.launchcode.scorekeeperapp.models.Event;
-import org.launchcode.scorekeeperapp.models.Scores;
-import org.launchcode.scorekeeperapp.models.TournamentData;
 import org.launchcode.scorekeeperapp.models.User;
 import org.launchcode.scorekeeperapp.models.data.ScoreRepository;
 import org.launchcode.scorekeeperapp.models.data.UserRepository;
@@ -92,11 +88,11 @@ public class UserController {
         return "redirect:/user/selectHostOrJoin";
     }
 
-    @GetMapping("selectHostOrJoin")
-    public String displayDashboardPage(Model model){
-        model.addAttribute("title", "Please select host or join.");
-        return "user/selectHostOrJoin";
-    }
+//    @GetMapping("selectHostOrJoin")
+//    public String displayDashboardPage(Model model){
+//        model.addAttribute("title", "Please select host or join.");
+//        return "user/selectHostOrJoin";
+//    }
 
     @GetMapping("login")
     public String displayLoginForm(Model model) {
@@ -136,13 +132,9 @@ public class UserController {
         HttpSession session = request.getSession();
         session.setAttribute("user", theUser.getId());
         session.setAttribute("userName", theUser.getUsername());
-        //System.out.println(theUser.getUsername());
-
 
         return "redirect:/user/selectHostOrJoin";
     }
-
-
 
     @GetMapping("logout")
     public String logout(HttpServletRequest request){

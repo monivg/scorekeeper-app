@@ -20,10 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
 
-import static org.springframework.web.util.WebUtils.setSessionAttribute;
 
 @Controller
 @Scope("session")
