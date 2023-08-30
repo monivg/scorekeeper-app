@@ -34,8 +34,14 @@ public class EventController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AuthenticationController authenticationController;
+
     @GetMapping("create")
-    public String displayCreateEventForm(Model model){
+    public String displayCreateEventForm(Model model, HttpServletRequest request){
+        HttpSession session = request.getSession();
+        User user = authenticationController.getUserFromSession(session);
+
         model.addAttribute(new Event());
         model.addAttribute("title","Create Event");
         return "events/create";
@@ -43,6 +49,9 @@ public class EventController {
 
     @PostMapping("create")
     public String processCreateEventForm(@ModelAttribute @Valid Event event, Errors errors, Model model, HttpServletRequest request){
+        HttpSession session = request.getSession();
+        User user = authenticationController.getUserFromSession(session);
+
         if (errors.hasErrors()){
             model.addAttribute(new Event());
             model.addAttribute("title","Create Event");
@@ -50,14 +59,16 @@ public class EventController {
         }
 
         eventRepository.save(event);
-        HttpSession session = request.getSession();
         session.setAttribute("event", event.getId());
         System.out.println("Event ID: " + event.getId());
         return "redirect:/events/play";
     }
 
     @GetMapping("/index")
-    public String displayAllEvents(Model model){
+    public String displayAllEvents(Model model, HttpServletRequest request){
+        HttpSession session = request.getSession();
+        User user = authenticationController.getUserFromSession(session);
+
         model.addAttribute("title","All Events");
         model.addAttribute("events",eventRepository.findAll());
         return "events/index";
@@ -65,6 +76,9 @@ public class EventController {
 
     @GetMapping("{eventId}")
     public String displayViewEventPage(Model model, @PathVariable int eventId, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        User user = authenticationController.getUserFromSession(session);
+
         String eventLink="https://localhost:8080/events/"+eventId;
         byte[] image = new byte[0];
         try{
@@ -77,7 +91,6 @@ public class EventController {
         model.addAttribute("eventLink",eventLink);
         model.addAttribute("qrcode",qrcode);
 
-        HttpSession session = request.getSession();
         session.setAttribute("event", eventId);
 
         Optional optEvent = eventRepository.findById(eventId);
@@ -130,8 +143,10 @@ public class EventController {
 
     @GetMapping("/play")
     public String showCreateForm(Model model, HttpServletRequest request) {
-        userEventScoreDTO uesdto = new userEventScoreDTO();
         HttpSession session = request.getSession();
+        User user = authenticationController.getUserFromSession(session);
+
+        userEventScoreDTO uesdto = new userEventScoreDTO();
         Integer attributeInt = (Integer) session.getAttribute("event");
         Event newEvent = eventRepository.findById(attributeInt).orElse(null);
 
@@ -139,23 +154,24 @@ public class EventController {
             Scores score = new Scores();
             uesdto.addScore(score);
         }
-        model.addAttribute("title", "Play Event ${session.getAttribute('event'}");
+        model.addAttribute("title", "Play Event" + session.getAttribute("event"));
         model.addAttribute("form", uesdto);
         return "events/play";
     }
 
     @PostMapping("save")
     public String saveScores(@ModelAttribute userEventScoreDTO dto, Model model, HttpServletRequest request) {
-
         HttpSession session = request.getSession();
+        User user = authenticationController.getUserFromSession(session);
+
         Integer eventId = (Integer) session.getAttribute("event");
         Integer userId = (Integer) session.getAttribute("user");
 
         try{
             Event event= eventRepository.findById(eventId).orElse(null);
-            User user = userRepository.findById(userId).orElse(null);
+            User player = userRepository.findById(userId).orElse(null);
             for (Scores score : dto.getScores()) {
-                score.setUser(user);
+                score.setUser(player);
                 score.setEvent(event);
             }
         } catch (Exception e) {
@@ -174,7 +190,10 @@ public class EventController {
 
 
     @GetMapping("scoreboard")
-    public String displaySingleEventScores(Model model){
+    public String displaySingleEventScores(Model model, HttpServletRequest request){
+        HttpSession session = request.getSession();
+        User user = authenticationController.getUserFromSession(session);
+
         model.addAttribute("title","Event Scores");
         return "events/scoreboard";
     }
@@ -182,6 +201,7 @@ public class EventController {
     @PostMapping("{eventId}")
     public String closeEvent(@PathVariable int eventId, HttpServletRequest request) {
         HttpSession session = request.getSession();
+        User user = authenticationController.getUserFromSession(session);
         Optional<Event> optionalEvent = eventRepository.findById(eventId);
 
         if (optionalEvent.isPresent()) {
@@ -189,7 +209,7 @@ public class EventController {
             event.setClosed(true);
             eventRepository.save(event);
         }
-        return "redirect:/user/selectHostOrJoin";
+        return "redirect:/user/dashboard";
     }
 
 

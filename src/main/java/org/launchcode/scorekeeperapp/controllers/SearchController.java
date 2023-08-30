@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,18 +29,27 @@ public class SearchController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private AuthenticationController authenticationController;
+
     public SearchController() {
 
     }
 
     @RequestMapping("")
-    public String searchByIdOrName(Model model) {
+    public String searchByIdOrName(Model model, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        User user = authenticationController.getUserFromSession(session);
+
         model.addAttribute("categories", ListController.searchChoices);
         return "search";
     }
 
     @PostMapping("results")
-    public String displaySearchResults(Model model, @RequestParam String searchCategory, @RequestParam String searchTerm) {
+    public String displaySearchResults(Model model, @RequestParam String searchCategory, @RequestParam String searchTerm, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        User user = authenticationController.getUserFromSession(session);
+
         Event eventInst = new Event();
         User userInst = new User();
         ArrayList<Event> tournaments = new ArrayList<>();

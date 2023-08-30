@@ -18,7 +18,7 @@ import java.util.*;
 
 @Controller
 @RequestMapping("user")
-public class UserController {
+public class AuthenticationController {
     @Autowired
     UserRepository userRepository;
 
@@ -85,7 +85,7 @@ public class UserController {
         session.setAttribute("user", newUser.getId());
         session.setAttribute("username", newUser.getUsername());
 
-        return "redirect:/user/selectHostOrJoin";
+        return "redirect:/user/dashboard";
     }
 
 //    @GetMapping("selectHostOrJoin")
@@ -133,7 +133,7 @@ public class UserController {
         session.setAttribute("user", theUser.getId());
         session.setAttribute("userName", theUser.getUsername());
 
-        return "redirect:/user/selectHostOrJoin";
+        return "redirect:/user/dashboard";
     }
 
     @GetMapping("logout")
