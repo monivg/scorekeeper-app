@@ -1,5 +1,6 @@
 package org.launchcode.scorekeeperapp.controllers;
 
+import org.launchcode.scorekeeperapp.models.Host;
 import org.launchcode.scorekeeperapp.models.User;
 import org.launchcode.scorekeeperapp.models.data.ScoreRepository;
 import org.launchcode.scorekeeperapp.models.data.UserRepository;
@@ -42,7 +43,7 @@ public class AuthenticationController {
     }
 
     private static void setUserInSession(HttpSession session, User user) {
-        session.setAttribute(userSessionKey, user.getId());
+        session.setAttribute(userSessionKey, user.getUserId());
     }
 
     @GetMapping("register")
@@ -78,11 +79,11 @@ public class AuthenticationController {
             return "user/register";
         }
 
-        User newUser = new User(registerFormDTO.getUsername(), registerFormDTO.getEmail(),registerFormDTO.getPassword());
+        Host newUser = new Host (registerFormDTO.getUsername(), registerFormDTO.getEmail(),registerFormDTO.getPassword());
         userRepository.save(newUser);
         setUserInSession(request.getSession(), newUser);
         HttpSession session = request.getSession();
-        session.setAttribute("user", newUser.getId());
+        session.setAttribute("user", newUser.getUserId());
         session.setAttribute("username", newUser.getUsername());
 
         return "redirect:/user/dashboard";
@@ -130,7 +131,7 @@ public class AuthenticationController {
 
         setUserInSession(request.getSession(), theUser);
         HttpSession session = request.getSession();
-        session.setAttribute("user", theUser.getId());
+        session.setAttribute("user", theUser.getUserId());
         session.setAttribute("userName", theUser.getUsername());
 
         return "redirect:/user/dashboard";

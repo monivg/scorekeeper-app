@@ -1,4 +1,15 @@
 package org.launchcode.scorekeeperapp.models;
 
-public class Host {
+import javax.persistence.Entity;
+
+@Entity
+public class Host extends User{
+
+    public Host(){
+    }
+
+    public Host (String username, String email, String password){
+        super();
+    }
+
 }

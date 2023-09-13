@@ -8,8 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Entity
-public class User extends AbstractEntity{
+@MappedSuperclass
+public abstract class User {
+
+    @Id
+    @GeneratedValue
+    private int userId;
 
     private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
     @NotNull
@@ -41,7 +45,6 @@ public class User extends AbstractEntity{
     }
 
     public User(String username, String email, String password) {
-        super();
         this.username = username;
         this.email = email;
         this.pwHash = encoder.encode(password);
@@ -63,5 +66,25 @@ public class User extends AbstractEntity{
         return encoder.matches(password, pwHash);
     }
 
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return userId == user.userId;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId);
+    }
 
 }
