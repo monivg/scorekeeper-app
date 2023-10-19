@@ -1,4 +1,16 @@
 package org.launchcode.scorekeeperapp.models;
 
-public class Player {
+import javax.persistence.Entity;
+
+@Entity
+public class Player extends User{
+
+    public Player(){
+
+    }
+
+    public Player(String username, String email, String password){
+        super();
+    }
 }
+
